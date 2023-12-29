@@ -2,16 +2,33 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import {CV} from "./cv/cv"
+
+
+function loginFailed(reason) {
+  console.log(reason);
+}
+
+function loggedIn() {
+	console.log("estoy logeado");
+}
+
+window.onload = ()=>{
+  CV.init({
+      baseUrl: "https://cv01.panaccess.com",
+      mode: "json",
+      jsonpTimeout: 5000,
+      username: localStorage.getItem('cvUser'),
+      password: localStorage.getItem('cvPass'),
+      apiToken: localStorage.getItem('cvToken'),
+      loginSuccessCallback: loggedIn,
+      loginFailedCallback: loginFailed
+  });
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <App />
-  </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+
