@@ -1,36 +1,80 @@
-import React, { useEffect, useState } from "react";
-import {CV} from "../../cv/cv"
+import { useState, useEffect } from 'react';
+import { CV } from "../../cv/cv";
+import { useIndexedDB } from "react-indexed-db-hook";
 
-export const Telemetria = () => {
+const Telemetria = () => {
 
-  const [on, setOn] = useState(true);
+  const { db } = useIndexedDB("telemetria");
+  // Estado para almacenar datos de telemetría
+  const [telemetriaData, setTelemetriaData] = useState([]);
 
-  function Telemetria(){
-    CV.call("getListOfTelemetryRecords",
-    {
-        sessionId:localStorage.getItem("sessionID"),
-        offset:1,
-        limit:1000,
-        // orderBy:"date",
-        // orderDir:"ASC",
-    },
-    (result) => {
-      if(result["success"]) {
-        const data = result["answer"]
-        console.log(data)
-      } else{
-        alert("failed to fetch result" + result["errorMessage"]);
+  // Límite de registros a recuperar en cada solicitud
+  const limit = 1000;
+
+  // Función asincrónica para realizar la solicitud de datos de telemetría
+  const fetchTelemetriaData = async (pageNumber) => {
+    try {
+      // Realiza una llamada a la función "getListOfTelemetryRecords" utilizando el objeto CV
+      const result = await new Promise((resolve) => {
+        CV.call(
+          "getListOfTelemetryRecords",
+          {
+            sessionId: localStorage.getItem("sessionID"),
+            offset: pageNumber,
+            limit: limit,
+          },
+          (result) => resolve(result)
+        );
+      });
+
+      // Verifica si la solicitud fue exitosa y actualiza el estado con los nuevos datos
+      if (result.success) {
+        const newData = result.answer;
+        setTelemetriaData((prevData) => [...prevData, ...newData.telemetryRecordEntries]);
+        console.log('Telemetria Data:', newData.telemetryRecordEntries);
+        return result;
+      } else {
+        // Muestra un mensaje de error si la solicitud falla
+        console.error('Failed to fetch result:', result.errorMessage);
+        return result;
       }
-    })
-  }
-
-  useEffect(() => {
-    if (on) {
-      Telemetria();
-      setOn(false);
+    } catch (error) {
+      // Captura y muestra errores en la consola si hay algún problema en la solicitud
+      console.error('Error fetching telemetry data:', error);
+      return { success: false, errorMessage: error.message };
     }
-  }, [on]);
+  };
 
+  // Efecto secundario que se ejecuta después de que el componente se monta
+  useEffect(() => {
+    // Función para recuperar todos los datos de telemetría paginados
+    const fetchAllData = async () => {
+      let pageNumber = 0;
+      try {
+        // Itera hasta que se recuperen todos los datos o haya un error
+        while (true) {
+          const result = await fetchTelemetriaData(pageNumber);
+          if (!result.success || result.answer.telemetryRecordEntries.length === 0) break;
+          pageNumber += limit;
+        }
+      } catch (error) {
+        // Muestra un mensaje de error si hay un problema durante la recuperación de datos
+        console.error('Error fetching telemetry data:', error);
+      }
+    };
 
-  return <div>Telemetria</div>;
+    // Llama a la función para recuperar todos los datos de telemetría
+    fetchAllData();
+
+    // Guarda la respuesta en la base de datos
+    const data = telemetriaData;
+    db.addItem("telemetry", data).then(() => {
+      console.log("Respuesta guardada en la base de datos");
+    });
+  }, []); // El segundo argumento [] asegura que este efecto solo se ejecute una vez al montar el componente
+
+  // Resto del componente...
 };
+
+// Exporta Telemetria como componente por defecto
+export default Telemetria;

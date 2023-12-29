@@ -1,14 +1,13 @@
+import { useIndexedDB } from 'react-indexed-db-hook';
 
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import Login from './component/Login/Login';
-import { Telemetria } from './component/telemetria/Telemetria';
-import TuComponente from './component/pruebas/TuComponente';
+import Telemetria from './component/Telemetria/Telemetria';
+
 
 
 function App() {
-
-
 
   return (
     <div className="App">
@@ -16,7 +15,6 @@ function App() {
         <Routes>
           <Route path='/' element={<Login/>}/>
           <Route path='/telemetria' element={<Telemetria/>}/>
-          <Route path='/prueba' element={<TuComponente/>}/>
         </Routes>
       </Router>
     </div>
