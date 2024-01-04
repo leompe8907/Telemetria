@@ -1,9 +1,9 @@
-import { useIndexedDB } from 'react-indexed-db-hook';
 
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import Login from './component/Login/Login';
 import Telemetria from './component/Telemetria/Telemetria';
+import VOD from './component/VOD/VOD';
 
 
 
@@ -15,6 +15,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Login/>}/>
           <Route path='/telemetria' element={<Telemetria/>}/>
+          <Route path='/VOD' element={<VOD/>}/>
         </Routes>
       </Router>
     </div>

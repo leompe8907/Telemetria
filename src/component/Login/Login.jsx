@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import md5 from "md5"
 import {CV} from "../../cv/cv"
+import Logo from "../../Media/Img/logoB.png"
+import "./Login.scss"
 
 
 function Login() {
@@ -58,7 +60,7 @@ function Login() {
       <div className="Background">
         <div className="Login">
           <div className="logo">
-            {/* <img src={} alt="Logo" className="Logo" /> */}
+            <img src={Logo} alt="Logo" className="Logo" /> 
           </div>
           <form onSubmit={handleSubmit} className="formLogin">
             <div className="" >

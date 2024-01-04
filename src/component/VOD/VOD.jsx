@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CV } from "../../cv/cv";
 
-const Telemetria = () => {
+const VOD = () => {
 
   // Estado para almacenar datos de telemetría
   const [telemetriaData, setTelemetriaData] = useState([]);
@@ -15,7 +15,7 @@ const Telemetria = () => {
       // Realiza una llamada a la función "getListOfTelemetryRecords" utilizando el objeto CV
       const result = await new Promise((resolve) => {
         CV.call(
-          "getListOfTelemetryRecords",
+          "getListOfVodAssets",
           {
             sessionId: localStorage.getItem("sessionID"),
             offset: pageNumber,
@@ -27,7 +27,6 @@ const Telemetria = () => {
       // Verifica si la solicitud fue exitosa y actualiza el estado con los nuevos datos
       if (result.success) {
         const newData = result.answer;
-        setTelemetriaData((prevData) => [...prevData, ...newData.telemetryRecordEntries]);
         console.log('Telemetria Data:', newData.telemetryRecordEntries);
         return result;
       } else {
@@ -67,5 +66,5 @@ const Telemetria = () => {
   // Resto del componente...
 };
 
-// Exporta Telemetria como componente por defecto
-export default Telemetria;
+// Exporta VOD como componente por defecto
+export default VOD;
